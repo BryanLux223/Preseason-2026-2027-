@@ -67,12 +67,40 @@ public Elevator() {//step 2
     .voltageCompensation(12.0) // Makes it so that even when battery drains, it still pumps out duty cycle relative to 12 Volts
     .smartCurrentLimit(40)
     .follow(elevatorMotor1, true)
-
+    //step 7
     elevatorMotor1.configure(elevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     elevatorMotor2.configure(followerConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    
+    elevatorEncoder//step 8
+    .setPosition(0.0);
+}
+public double getElevatorHeight(){//step 8 again
+  return elevatorEncoder.getPosition;
+}
+public double getElevatorVelocity(){//and another step 8
+  return elevatorEncoder.getVelocity;
+}
+
+public void setDesigredHeigh(double heightMeters) {//step 9
+  setpointHeight = MathUtil.clamp(heightMeters,0.0,1.44);
+  elevatorController.setSetpoint(setpointHeight, ControlType.kMAXMotionPositionControl, ClosedLoopSlot.kSlot0);
+  positionControlEnabled = true;
+}
+
+public void setElevatorSpeed(double speed) {//step 10
+  postionControlEnabled = false;
+  elevatorMotor1.set(MathUtil.clamp(speed, -10,1.0));
 
 }
 
+public void setElevatorVoltage(double voltage) {//step 11
+  postionControlEnabled = false;
+  elevatorMotor1.set(MathUtil.clamp(voltage,-12.0,12.0));
+}
+
+public void stop() {
+  elevatorMotor1.stopMotor();
+}
 
   @Override
   public void periodic() {
